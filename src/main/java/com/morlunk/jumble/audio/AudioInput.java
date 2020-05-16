@@ -19,6 +19,8 @@ package com.morlunk.jumble.audio;
 
 import android.media.AudioFormat;
 import android.media.AudioRecord;
+import android.media.audiofx.AcousticEchoCanceler;
+import android.media.audiofx.NoiseSuppressor;
 import android.util.Log;
 
 import com.morlunk.jumble.BuildConfig;
@@ -32,6 +34,8 @@ import com.morlunk.jumble.protocol.AudioHandler;
  * Created by andrew on 23/08/13.
  */
 public class AudioInput implements Runnable {
+    private static final String TAG = "JumbleAudioInput";
+
     public static final int[] SAMPLE_RATES = { 48000, 44100, 16000, 8000 };
 
     // AudioRecord state
@@ -86,6 +90,18 @@ public class AudioInput implements Runnable {
         if(audioRecord.getState() == AudioRecord.STATE_UNINITIALIZED) {
             audioRecord.release();
             throw new AudioInitializationException("AudioRecord failed to initialize!");
+        }
+
+        if (NoiseSuppressor.isAvailable()) {
+            NoiseSuppressor.create(audioRecord.getAudioSessionId());
+        } else {
+            Log.i(TAG, "Noise suppression not available.");
+        }
+
+        if (AcousticEchoCanceler.isAvailable()) {
+            AcousticEchoCanceler.create(audioRecord.getAudioSessionId());
+        } else {
+            Log.i(TAG, "Acoustic echo cancellation not available.");
         }
 
         return audioRecord;
