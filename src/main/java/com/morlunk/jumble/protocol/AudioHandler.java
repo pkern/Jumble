@@ -29,9 +29,11 @@ import com.morlunk.jumble.audio.encoder.CELT11Encoder;
 import com.morlunk.jumble.audio.encoder.CELT7Encoder;
 import com.morlunk.jumble.audio.encoder.IEncoder;
 import com.morlunk.jumble.audio.encoder.OpusEncoder;
-import com.morlunk.jumble.audio.encoder.PreprocessingEncoder;
+import com.morlunk.jumble.audio.encoder.RNNoiseEncoder;
 import com.morlunk.jumble.audio.encoder.ResamplingEncoder;
+import com.morlunk.jumble.audio.encoder.SpeexPreprocessingEncoder;
 import com.morlunk.jumble.audio.inputmode.IInputMode;
+import com.morlunk.jumble.audio.javacpp.Speex;
 import com.morlunk.jumble.exception.AudioException;
 import com.morlunk.jumble.exception.AudioInitializationException;
 import com.morlunk.jumble.exception.NativeAudioException;
@@ -84,6 +86,8 @@ public class AudioHandler extends JumbleNetworkListener implements AudioInput.Au
     private boolean mBluetoothOn;
     private boolean mHalfDuplex;
     private boolean mPreprocessorEnabled;
+    private boolean mRNNoiseEnabled;
+
     /** The last observed talking state. False if muted, or the input mode is not active. */
     private boolean mTalking;
 
@@ -94,7 +98,8 @@ public class AudioHandler extends JumbleNetworkListener implements AudioInput.Au
                         int sampleRate, int targetBitrate, int targetFramesPerPacket,
                         IInputMode inputMode, byte targetId, float amplitudeBoost,
                         boolean bluetoothEnabled, boolean halfDuplexEnabled,
-                        boolean preprocessorEnabled, AudioEncodeListener encodeListener,
+                        boolean preprocessorEnabled, boolean rnnoiseEnabled,
+                        AudioEncodeListener encodeListener,
                         AudioOutput.AudioOutputListener outputListener) throws AudioInitializationException, NativeAudioException {
         mContext = context;
         mLogger = logger;
@@ -108,6 +113,7 @@ public class AudioHandler extends JumbleNetworkListener implements AudioInput.Au
         mBluetoothOn = bluetoothEnabled;
         mHalfDuplex = halfDuplexEnabled;
         mPreprocessorEnabled = preprocessorEnabled;
+        mRNNoiseEnabled = rnnoiseEnabled;
         mEncodeListener = encodeListener;
         mOutputListener = outputListener;
         mTalking = false;
@@ -225,7 +231,11 @@ public class AudioHandler extends JumbleNetworkListener implements AudioInput.Au
         }
 
         if (mPreprocessorEnabled) {
-            encoder = new PreprocessingEncoder(encoder, FRAME_SIZE, SAMPLE_RATE);
+            encoder = new SpeexPreprocessingEncoder(encoder, FRAME_SIZE, SAMPLE_RATE);
+        }
+
+        if (mRNNoiseEnabled) {
+            encoder = new RNNoiseEncoder(encoder, FRAME_SIZE, SAMPLE_RATE);
         }
 
         if (mInput.getSampleRate() != SAMPLE_RATE) {
@@ -506,6 +516,7 @@ public class AudioHandler extends JumbleNetworkListener implements AudioInput.Au
         private boolean mBluetoothEnabled;
         private boolean mHalfDuplexEnabled;
         private boolean mPreprocessorEnabled;
+        private boolean mRNNoiseEnabled;
         private IInputMode mInputMode;
         private AudioEncodeListener mEncodeListener;
         private AudioOutput.AudioOutputListener mTalkingListener;
@@ -565,6 +576,11 @@ public class AudioHandler extends JumbleNetworkListener implements AudioInput.Au
             return this;
         }
 
+        public Builder setRNNoiseEnabled(boolean rnNoiseEnabled) {
+            mRNNoiseEnabled = rnNoiseEnabled;
+            return this;
+        }
+
         public Builder setEncodeListener(AudioEncodeListener encodeListener) {
             mEncodeListener = encodeListener;
             return this;
@@ -588,7 +604,7 @@ public class AudioHandler extends JumbleNetworkListener implements AudioInput.Au
             AudioHandler handler = new AudioHandler(mContext, mLogger, mAudioStream, mAudioSource,
                     mInputSampleRate, mTargetBitrate, mTargetFramesPerPacket, mInputMode, targetId,
                     mAmplitudeBoost, mBluetoothEnabled, mHalfDuplexEnabled,
-                    mPreprocessorEnabled, mEncodeListener, mTalkingListener);
+                    mPreprocessorEnabled, mRNNoiseEnabled, mEncodeListener, mTalkingListener);
             handler.initialize(self, maxBandwidth, codec);
             return handler;
         }

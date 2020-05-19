@@ -86,3 +86,14 @@ LOCAL_CFLAGS		:= -DOPUS_BUILD -DVAR_ARRAYS -Wno-traditional -DFIXED_POINT
 LOCAL_CPP_FEATURES  := exceptions
 LOCAL_LDLIBS        := -llog
 include $(BUILD_SHARED_LIBRARY)
+
+include $(CLEAR_VARS)
+LOCAL_PATH                      := $(ROOT)/rnnoise/src
+LOCAL_MODULE            := jnirnnoise
+LOCAL_SRC_FILES         := celt_lpc.c denoise.c kiss_fft.c pitch.c rnn.c rnn_data.c \
+	$(ROOT)/jnirnnoise.cpp $(ROOT)/jnijavacpp.cpp
+LOCAL_C_INCLUDES    := $(ROOT)/rnnoise/include/ $(ROOT)/opus/celt
+LOCAL_CFLAGS            := -DRNNOISE_BUILD -fvisibility=hidden
+LOCAL_CPP_FEATURES := exceptions
+LOCAL_LDLIBS := -llog
+include $(BUILD_SHARED_LIBRARY)

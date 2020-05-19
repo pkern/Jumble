@@ -114,6 +114,7 @@ public class JumbleService extends Service implements IJumbleService, IJumbleSes
     /** A list of users that should be local ignored upon connection. */
     public static final String EXTRAS_LOCAL_IGNORE_HISTORY = "local_ignore_history";
     public static final String EXTRAS_ENABLE_PREPROCESSOR = "enable_preprocessor";
+    public static final String EXTRAS_ENABLE_RNNOISE = "enable_rnnoise";
 
     // Service settings
     private Server mServer;
@@ -608,6 +609,9 @@ public class JumbleService extends Service implements IJumbleService, IJumbleSes
         }
         if (extras.containsKey(EXTRAS_ENABLE_PREPROCESSOR)) {
             mAudioBuilder.setPreprocessorEnabled(extras.getBoolean(EXTRAS_ENABLE_PREPROCESSOR));
+        }
+        if (extras.containsKey(EXTRAS_ENABLE_RNNOISE)) {
+            mAudioBuilder.setRNNoiseEnabled(extras.getBoolean(EXTRAS_ENABLE_RNNOISE));
         }
 
         // Reload audio subsystem if initialized

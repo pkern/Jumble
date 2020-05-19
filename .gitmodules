@@ -10,3 +10,6 @@
 [submodule "src/main/jni/speex"]
 	path = src/main/jni/speex
 	url = https://github.com/mumble-voip/speex/
+[submodule "src/main/jni/rnnoise"]
+	path = src/main/jni/rnnoise
+	url = https://github.com/mumble-voip/rnnoise

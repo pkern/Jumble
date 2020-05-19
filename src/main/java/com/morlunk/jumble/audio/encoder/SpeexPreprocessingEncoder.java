@@ -29,11 +29,11 @@ import java.nio.BufferUnderflowException;
  * Uses Speex preprocessor.
  * Created by andrew on 17/04/14.
  */
-public class PreprocessingEncoder implements IEncoder {
+public class SpeexPreprocessingEncoder implements IEncoder {
     private IEncoder mEncoder;
     private Speex.SpeexPreprocessState mPreprocessor;
 
-    public PreprocessingEncoder(IEncoder encoder, int frameSize, int sampleRate) {
+    public SpeexPreprocessingEncoder(IEncoder encoder, int frameSize, int sampleRate) {
         mEncoder = encoder;
         mPreprocessor = new Speex.SpeexPreprocessState(frameSize, sampleRate);
 
