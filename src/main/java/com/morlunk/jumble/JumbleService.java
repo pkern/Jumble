@@ -77,6 +77,8 @@ public class JumbleService extends Service implements IJumbleService, IJumbleSes
         Security.insertProviderAt(new org.spongycastle.jce.provider.BouncyCastleProvider(), 1);
     }
 
+    private static final String TAG = "JumbleService";
+
     /**
      * An action to immediately connect to a given Mumble server.
      * Requires that {@link #EXTRAS_SERVER} is provided.
@@ -167,7 +169,7 @@ public class JumbleService extends Service implements IJumbleService, IJumbleSes
 
             ConnectivityManager cm = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
             if (cm.getActiveNetworkInfo() != null && cm.getActiveNetworkInfo().isConnected()) {
-                Log.v(Constants.TAG, "Connectivity restored, attempting reconnect.");
+                Log.v(TAG, "Connectivity restored, attempting reconnect.");
                 connect();
             }
         }
@@ -322,12 +324,15 @@ public class JumbleService extends Service implements IJumbleService, IJumbleSes
         return mConnection != null && mConnection.isSynchronized();
     }
 
+    private static final int PROTOCOL_VERSION =
+            (Constants.PROTOCOL_MAJOR << 16) | (Constants.PROTOCOL_MINOR << 8) | Constants.PROTOCOL_PATCH;
+
     @Override
     public void onConnectionEstablished() {
         // Send version information and authenticate.
         final Mumble.Version.Builder version = Mumble.Version.newBuilder();
         version.setRelease(mClientName);
-        version.setVersion(Constants.PROTOCOL_VERSION);
+        version.setVersion(PROTOCOL_VERSION);
         version.setOs("Android");
         version.setOsVersion(Build.VERSION.RELEASE);
 
@@ -348,7 +353,7 @@ public class JumbleService extends Service implements IJumbleService, IJumbleSes
     public void onConnectionSynchronized() {
         mConnectionState = ConnectionState.CONNECTED;
 
-        Log.v(Constants.TAG, "Connected");
+        Log.v(TAG, "Connected");
         mWakeLock.acquire();
 
         try {
@@ -376,14 +381,14 @@ public class JumbleService extends Service implements IJumbleService, IJumbleSes
     @Override
     public void onConnectionDisconnected(JumbleException e) {
         if (e != null) {
-            Log.e(Constants.TAG, "Error: " + e.getMessage() +
+            Log.e(TAG, "Error: " + e.getMessage() +
                     " (reason: " + e.getReason().name() + ")");
             mConnectionState = ConnectionState.CONNECTION_LOST;
 
             setReconnecting(mAutoReconnect
                     && e.getReason() == JumbleException.JumbleDisconnectReason.CONNECTION_ERROR);
         } else {
-            Log.v(Constants.TAG, "Disconnected");
+            Log.v(TAG, "Disconnected");
             mConnectionState = ConnectionState.DISCONNECTED;
         }
 
@@ -437,7 +442,7 @@ public class JumbleService extends Service implements IJumbleService, IJumbleSes
             ConnectivityManager cm = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
             NetworkInfo info = cm.getActiveNetworkInfo();
             if (info != null && info.isConnected()) {
-                Log.v(Constants.TAG, "Connection lost due to non-connectivity issue. Start reconnect polling.");
+                Log.v(TAG, "Connection lost due to non-connectivity issue. Start reconnect polling.");
                 Handler mainHandler = new Handler();
                 mainHandler.postDelayed(new Runnable() {
                     @Override
@@ -448,7 +453,7 @@ public class JumbleService extends Service implements IJumbleService, IJumbleSes
             } else {
                 // In the event that we've lost connectivity, don't poll. Wait until network
                 // returns before we resume connection attempts.
-                Log.v(Constants.TAG, "Connection lost due to connectivity issue. Waiting until network returns.");
+                Log.v(TAG, "Connection lost due to connectivity issue. Waiting until network returns.");
                 try {
                     registerReceiver(mConnectivityReceiver,
                             new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
@@ -617,7 +622,7 @@ public class JumbleService extends Service implements IJumbleService, IJumbleSes
         // Reload audio subsystem if initialized
         if (mAudioHandler != null && mAudioHandler.isInitialized()) {
             createAudioHandler();
-            Log.i(Constants.TAG, "Audio subsystem reloaded after settings change.");
+            Log.i(TAG, "Audio subsystem reloaded after settings change.");
         }
         return reconnectNeeded;
     }

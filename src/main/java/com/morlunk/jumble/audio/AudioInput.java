@@ -175,7 +175,7 @@ public class AudioInput implements Runnable {
     public void run() {
         android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_URGENT_AUDIO);
 
-        Log.i(Constants.TAG, "AudioInput: started");
+        Log.i(TAG, "AudioInput: started");
 
         mAudioRecord.startRecording();
 
@@ -189,13 +189,13 @@ public class AudioInput implements Runnable {
             if(shortsRead > 0) {
                 mListener.onAudioInputReceived(mAudioBuffer, mFrameSize);
             } else {
-                Log.e(Constants.TAG, "Error fetching audio! AudioRecord error " + shortsRead);
+                Log.e(TAG, "Error fetching audio! AudioRecord error " + shortsRead);
             }
         }
 
         mAudioRecord.stop();
 
-        Log.i(Constants.TAG, "AudioInput: stopped");
+        Log.i(TAG, "AudioInput: stopped");
     }
 
     public interface AudioInputListener {

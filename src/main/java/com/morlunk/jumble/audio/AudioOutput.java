@@ -50,6 +50,8 @@ import java.util.concurrent.locks.ReentrantLock;
  * Created by andrew on 16/07/13.
  */
 public class AudioOutput implements Runnable, AudioOutputSpeech.TalkStateListener {
+    private static final String TAG = "JumbleAudioOutput";
+
     private Map<Integer,AudioOutputSpeech> mAudioOutputs = new HashMap<>();
     private AudioTrack mAudioTrack;
     private int mBufferSize;
@@ -77,7 +79,7 @@ public class AudioOutput implements Runnable, AudioOutputSpeech.TalkStateListene
         int minBufferSize = AudioTrack.getMinBufferSize(AudioHandler.SAMPLE_RATE,
                 AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT);
         mBufferSize = Math.min(minBufferSize, AudioHandler.FRAME_SIZE * 12);
-        Log.v(Constants.TAG, "Using buffer size " + mBufferSize + ", system's min buffer size: " + minBufferSize);
+        Log.v(TAG, "Using buffer size " + mBufferSize + ", system's min buffer size: " + minBufferSize);
 
         try {
             mAudioTrack = new AudioTrack(audioStream,
@@ -127,7 +129,7 @@ public class AudioOutput implements Runnable, AudioOutputSpeech.TalkStateListene
 
     @Override
     public void run() {
-        Log.v(Constants.TAG, "Started audio output thread.");
+        Log.v(TAG, "Started audio output thread.");
         android.os.Process.setThreadPriority(Process.THREAD_PRIORITY_URGENT_AUDIO);
         mRunning = true;
         mAudioTrack.play();
@@ -138,7 +140,7 @@ public class AudioOutput implements Runnable, AudioOutputSpeech.TalkStateListene
             if(fetchAudio(mix, 0, mBufferSize)) {
                 mAudioTrack.write(mix, 0, mBufferSize);
             } else {
-                Log.v(Constants.TAG, "Pausing audio output thread.");
+                Log.v(TAG, "Pausing audio output thread.");
                 synchronized (mInactiveLock) {
                     mAudioTrack.flush();
                     mAudioTrack.pause();
@@ -151,7 +153,7 @@ public class AudioOutput implements Runnable, AudioOutputSpeech.TalkStateListene
 
                     mAudioTrack.play();
                 }
-                Log.v(Constants.TAG, "Resuming audio output thread.");
+                Log.v(TAG, "Resuming audio output thread.");
             }
         }
 
@@ -181,7 +183,7 @@ public class AudioOutput implements Runnable, AudioOutputSpeech.TalkStateListene
                     sources.add(result);
                 } else {
                     AudioOutputSpeech speech = result.getSpeechOutput();
-                    Log.v(Constants.TAG, "Deleted audio user " + speech.getUser().getName());
+                    Log.v(TAG, "Deleted audio user " + speech.getUser().getName());
                     mAudioOutputs.remove(speech.getSession());
                     speech.destroy();
                 }
@@ -227,11 +229,11 @@ public class AudioOutput implements Runnable, AudioOutputSpeech.TalkStateListene
                 try {
                     aop = new AudioOutputSpeech(user, messageType, mBufferSize, this);
                 } catch (NativeAudioException e) {
-                    Log.v(Constants.TAG, "Failed to create audio user "+user.getName());
+                    Log.v(TAG, "Failed to create audio user "+user.getName());
                     e.printStackTrace();
                     return;
                 }
-                Log.v(Constants.TAG, "Created audio user "+user.getName());
+                Log.v(TAG, "Created audio user "+user.getName());
                 mAudioOutputs.put(session, aop);
             }
             mPacketLock.unlock();

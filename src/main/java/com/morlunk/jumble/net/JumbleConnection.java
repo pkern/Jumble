@@ -60,6 +60,8 @@ import java.util.concurrent.TimeUnit;
 
 public class JumbleConnection implements JumbleTCP.TCPConnectionListener, JumbleUDP.UDPConnectionListener {
 
+    private static final String TAG = "JumbleConnection";
+
     /**
      * Message types that aren't shown in logcat.
      * For annoying types like UDPTunnel.
@@ -603,7 +605,7 @@ public class JumbleConnection implements JumbleTCP.TCPConnectionListener, Jumble
     @Override
     public void onTCPMessageReceived(JumbleTCPMessageType type, int length, byte[] data) {
         if(!UNLOGGED_MESSAGES.contains(type))
-            Log.v(Constants.TAG, "IN: "+type);
+            Log.v(TAG, "IN: "+type);
 
         if(type == JumbleTCPMessageType.UDPTunnel) {
             onUDPDataReceived(data);

@@ -49,6 +49,8 @@ import java.util.Map;
  * Created by andrew on 18/07/13.
  */
 public class ModelHandler extends JumbleTCPMessageListener.Stub {
+    private static final String TAG = "JumbleModelHandler";
+
     private final Context mContext;
     private final Map<Integer, Channel> mChannels;
     private final Map<Integer, User> mUsers;
@@ -332,7 +334,7 @@ public class ModelHandler extends JumbleTCPMessageListener.Stub {
         if(msg.hasChannelId()) {
             final Channel channel = mChannels.get(msg.getChannelId());
             if(channel == null) {
-                Log.e(Constants.TAG, "Invalid channel for user!");
+                Log.e(TAG, "Invalid channel for user!");
                 return; // TODO handle better
             }
             final Channel old = user.getChannel();

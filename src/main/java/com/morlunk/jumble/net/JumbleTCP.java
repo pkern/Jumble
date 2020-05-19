@@ -42,6 +42,8 @@ import android.os.Build;
  * Parses Mumble protobuf packets according to the Mumble protocol specification.
  */
 public class JumbleTCP extends JumbleNetworkThread {
+    private static final String TAG = "JumbleTCP";
+
     private final JumbleSSLSocketFactory mSocketFactory;
     private String mHost;
     private int mPort;
@@ -78,7 +80,7 @@ public class JumbleTCP extends JumbleNetworkThread {
         try {
             InetAddress address = InetAddress.getByName(mHost);
 
-            Log.i(Constants.TAG, "JumbleTCP: Connecting");
+            Log.i(TAG, "JumbleTCP: Connecting");
 
             if(mUseTor)
                 mTCPSocket = mSocketFactory.createTorSocket(address, mPort, JumbleConnection.TOR_HOST, JumbleConnection.TOR_PORT);
@@ -93,12 +95,12 @@ public class JumbleTCP extends JumbleNetworkThread {
             mTCPSocket.setKeepAlive(true);
             mTCPSocket.startHandshake();
 
-            Log.v(Constants.TAG, "JumbleTCP: Started handshake");
+            Log.v(TAG, "JumbleTCP: Started handshake");
 
             mDataInput = new DataInputStream(mTCPSocket.getInputStream());
             mDataOutput = new DataOutputStream(mTCPSocket.getOutputStream());
 
-            Log.v(Constants.TAG, "JumbleTCP: Now listening");
+            Log.v(TAG, "JumbleTCP: Now listening");
             mConnected = true;
 
             if(mListener != null) {
@@ -174,7 +176,7 @@ public class JumbleTCP extends JumbleNetworkThread {
             @Override
             public void run() {
                 if (!JumbleConnection.UNLOGGED_MESSAGES.contains(messageType))
-                    Log.v(Constants.TAG, "OUT: " + messageType);
+                    Log.v(TAG, "OUT: " + messageType);
                 try {
                     mDataOutput.writeShort(messageType.ordinal());
                     mDataOutput.writeInt(message.getSerializedSize());
@@ -197,7 +199,7 @@ public class JumbleTCP extends JumbleNetworkThread {
             @Override
             public void run() {
                 if (!JumbleConnection.UNLOGGED_MESSAGES.contains(messageType))
-                    Log.v(Constants.TAG, "OUT: " + messageType);
+                    Log.v(TAG, "OUT: " + messageType);
                 try {
                     mDataOutput.writeShort(messageType.ordinal());
                     mDataOutput.writeInt(length);

@@ -55,6 +55,8 @@ import com.morlunk.jumble.util.JumbleNetworkListener;
  * Created by andrew on 23/04/14.
  */
 public class AudioHandler extends JumbleNetworkListener implements AudioInput.AudioInputListener {
+    private static final String TAG = "JumbleAudioHandler";
+
     public static final int SAMPLE_RATE = 48000;
     public static final int FRAME_SIZE = SAMPLE_RATE/100;
     public static final int MAX_BUFFER_SIZE = 960;
@@ -226,7 +228,7 @@ public class AudioHandler extends JumbleNetworkListener implements AudioInput.Au
                         MAX_BUFFER_SIZE);
                 break;
             default:
-                Log.w(Constants.TAG, "Unsupported codec, input disabled.");
+                Log.w(TAG, "Unsupported codec, input disabled.");
                 return;
         }
 

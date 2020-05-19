@@ -36,7 +36,7 @@ public class URLParserTest extends TestCase {
         try {
             Server server = MumbleURLParser.parseURL(url);
             assertEquals(server.getHost(), "server.com");
-            assertEquals(server.getPort(), Constants.DEFAULT_PORT);
+            assertEquals(server.getPort(), MumbleURLParser.DEFAULT_PORT);
         } catch (MalformedURLException e) {
             fail("Failed to parse URL.");
         }
@@ -59,7 +59,7 @@ public class URLParserTest extends TestCase {
             Server server = MumbleURLParser.parseURL(url);
             assertEquals(server.getHost(), "server.com");
             assertEquals(server.getUsername(), "TestUser");
-            assertEquals(server.getPort(), Constants.DEFAULT_PORT);
+            assertEquals(server.getPort(), MumbleURLParser.DEFAULT_PORT);
         } catch (MalformedURLException e) {
             fail("Failed to parse URL.");
         }
@@ -84,7 +84,7 @@ public class URLParserTest extends TestCase {
             Server server = MumbleURLParser.parseURL(url);
             assertEquals(server.getHost(), "server.com");
             assertEquals(server.getPassword(), "mypassword");
-            assertEquals(server.getPort(), Constants.DEFAULT_PORT);
+            assertEquals(server.getPort(), MumbleURLParser.DEFAULT_PORT);
         } catch (MalformedURLException e) {
             fail("Failed to parse URL.");
         }

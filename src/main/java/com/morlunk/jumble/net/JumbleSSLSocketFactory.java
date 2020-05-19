@@ -44,6 +44,8 @@ import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
 
 public class JumbleSSLSocketFactory {
+    private static final String TAG = "JumbleSSLSocketFactory";
+
     private SSLContext mContext;
     private JumbleTrustManagerWrapper mTrustWrapper;
 
@@ -61,10 +63,10 @@ public class JumbleSSLSocketFactory {
             TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
             tmf.init(trustStore);
             mTrustWrapper = new JumbleTrustManagerWrapper((X509TrustManager) tmf.getTrustManagers()[0]);
-            Log.i(Constants.TAG, "Using custom trust store " + trustStorePath + " with system trust store");
+            Log.i(TAG, "Using custom trust store " + trustStorePath + " with system trust store");
         } else {
             mTrustWrapper = new JumbleTrustManagerWrapper(null);
-            Log.i(Constants.TAG, "Using system trust store");
+            Log.i(TAG, "Using system trust store");
         }
 
         mContext.init(kmf.getKeyManagers(), new TrustManager[] { mTrustWrapper }, null);

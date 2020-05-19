@@ -146,7 +146,7 @@ public class JumbleUDP implements Runnable {
                         }
                     }
                 } catch (BadPaddingException | IllegalBlockSizeException | ShortBufferException e) {
-                    Log.d(Constants.TAG, "Discarding packet", e);
+                    Log.d(TAG, "Discarding packet", e);
                 }
             }
         } catch (final IOException e) {

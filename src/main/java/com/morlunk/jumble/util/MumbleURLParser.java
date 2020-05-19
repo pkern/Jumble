@@ -31,6 +31,8 @@ import java.util.regex.Pattern;
  */
 public class MumbleURLParser {
 
+    public static final int DEFAULT_PORT = 64738;
+
     private static final Pattern URL_PATTERN = Pattern.compile("mumble://(([^:]+)?(:(.+?))?@)?(.+?)(:([0-9]+?))?/");
 
     /**
@@ -46,7 +48,7 @@ public class MumbleURLParser {
             String password = matcher.group(4);
             String host = matcher.group(5);
             String portString = matcher.group(7);
-            int port = portString == null ? Constants.DEFAULT_PORT : Integer.parseInt(portString);
+            int port = portString == null ? DEFAULT_PORT : Integer.parseInt(portString);
             return new Server(-1, null, host, port, username, password);
         } else {
             throw new MalformedURLException();
