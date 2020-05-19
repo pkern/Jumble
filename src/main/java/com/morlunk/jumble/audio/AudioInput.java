@@ -18,6 +18,7 @@
 package com.morlunk.jumble.audio;
 
 import android.media.AudioFormat;
+import android.media.AudioManager;
 import android.media.AudioRecord;
 import android.media.audiofx.AcousticEchoCanceler;
 import android.media.audiofx.NoiseSuppressor;
@@ -92,14 +93,20 @@ public class AudioInput implements Runnable {
             throw new AudioInitializationException("AudioRecord failed to initialize!");
         }
 
-        if (NoiseSuppressor.isAvailable()) {
-            NoiseSuppressor.create(audioRecord.getAudioSessionId());
+        NoiseSuppressor noiseSuppressor;
+        if (NoiseSuppressor.isAvailable() &&
+                (noiseSuppressor = NoiseSuppressor.create(audioRecord.getAudioSessionId())) != null &&
+                noiseSuppressor.getEnabled()) {
+            Log.i(TAG, "Noise suppressor attached.");
         } else {
             Log.i(TAG, "Noise suppression not available.");
         }
 
-        if (AcousticEchoCanceler.isAvailable()) {
-            AcousticEchoCanceler.create(audioRecord.getAudioSessionId());
+        AcousticEchoCanceler acousticEchoCanceler;
+        if (AcousticEchoCanceler.isAvailable() &&
+                (acousticEchoCanceler = AcousticEchoCanceler.create(audioRecord.getAudioSessionId())) != null &&
+                acousticEchoCanceler.getEnabled()) {
+            Log.i(TAG, "Acoustic echo canceler attached.");
         } else {
             Log.i(TAG, "Acoustic echo cancellation not available.");
         }
